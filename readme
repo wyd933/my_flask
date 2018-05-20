@@ -1,3 +1,35 @@
+
+学习Flask Web开发 基于Python的Web应用开发实战的总结，以整体理解的方式换了下例子
+的顺序如果需要深入学习请访问其github
+
+https://github.com/miguelgrinberg/flasky-first-edition
+Flask Web Development by Miguel Grinberg(O'Reilly).
+Copyright 2014 Miguel Grinberg, 978-1-449-3726-2
+
+涉及方面：
+模板的处理方式
+用来处理HTML的等前端内容的表现形式，完成业务和UI的分离
+Jinja2文档http://jinja.pocoo.org/docs
+
+集成日期和时间的处理到Jinja2模板 Flask—Moment
+
+
+
+表单交互
+把类似报表形式的内容放在HTTP中传递，解决了协议传输等单调而重复的内容
+Flask-WTF（http://pythonhosted.org/Flask-WTF）
+
+CSRF攻击：
+伪造一个提交链接，然后把链接发送到需要提交确认的用户，当用户点开链接的时候，如果该用户cookie
+保存了授权信息且没有过期，那么该用户在不知情的情况下完成了一次确认行为
+
+
+应用层叠样式表（CSS）和Javascript文件的HTML响应，并在HTML、CSS、Javascript（试图呈现的套路）
+代码中实例化所需组件，最适合在模板中执行
+Bootstrap文档http://getbootstrap.com
+
+
+
 这段代码主要基于自己对Flask Web开发(狗书)的理解，将代码划分开来学习的
 虚拟环境：
 sudo apt-get install python-virtualenv
@@ -22,10 +54,11 @@ flask.py 加入shell命令行，因为Flask_Script不再维护，所以使用最
 @app.shell_context_processor
 
 使用方法：
-export FLASK_APP=flask.py(自己的应用文件)
+export FLASK_APP=flask.py(自己的应用文件flask.py)
 flask shell
 
-/×请求上下文、请求调度、请求钩子、响应，后续增加例子就在后面补充，涉及RESTFUL模型、HTTP协议和上下文文管理×/
+/×请求上下文、请求调度、请求钩子、响应，后续增加例子就在后面补充，涉及RESTFUL模型、HTTP协议和
+上下文文管理×/
 
 引入模板
 3、在做一个项目的时候，如果业务和视图呈现不做区别，或者功能不模块化的话，会提高维护成本。出了问题，
@@ -34,16 +67,85 @@ flask shell
 
 在APP下创建templates文件夹遇到jinja2.exceptions.TemplateNotFound问题
 
-犯了一个超低级错误，居然把python自带的__main__变量加了引号，太低级了，这样在调用蓝本路由的时候，flask就不知道
+犯了一个超低级错误，居然把python自带的__name__变量加了引号，太低级了，这样在调用蓝本路由的时候，
+flask就不知道
 在哪里找视图函数了,因为main = Blueprint("main", __name__) 蓝本可以根据第二个参数找到蓝本所在位置
+
+user_bootstrap.html主要是用来呈现页面的，主要涉及前端的HTML，CSS和Javascript
+引入了title（界面标题）、navbar（导航条）和content（界面主体）
+后端需要处理前端传入的name参数
+
+加入错误的路由处理
+@main.app_errorhandler(500)  //500 HTTP协议中的状态码、404和403比较常见，e是异常信息,可以参阅python
+异常信息处理，关于html则是直接引用原书的文件
+def internal_server_error(e):
+    return render_template('500.html'), 500
+
+4、在title上加入了一个静态图片
+{{ url_for('static', filename='favicon.ico') }}
+
+5、在加入moment的时候，user_bootstrap.html会对base的部分功能重写，导致引入moment模块的时候，
+把{% block page_content %}的调用写没了，目前只考虑添加功能，本质上模拟真实的迭代。bootstrap的是否
+对父模板进行重写是需要好好考虑的
+后端moment做了初始化，向模板开放moment类，渲染的时候把时间传入html，Html使用moment导入时间处理
+moment(current_time).format('LLL')
+moment(current_time).fromNow(refresh=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 关于HTML：
 HTML是一种文本解释性语言，通过标签的形式，完成网页的呈现。学得快，忘的不比学得慢。
 个人感觉HTML的主要功力在于视觉的设计上，而不是语言本身，后面学到的模板会记录到这里.
 引用于http://www.w3school.com.cn
 Jinja2文档http://jinja.pocoo.org/docs
+模板的处理方式
+选择语句：
+{% if ? %}
 
+{% else %}
 
+{% endif %}
 
+循环语句：
+{% for comment in comments %}
+
+{% endfor %}
+
+宏定义:
+{% marco 宏定义%}
+    宏定义实体
+{% end marco %}
+
+导入、包含和衍生：
+{% import ‘base.html’ as base %}
+{% include 'common.html' %}
+{% extends "base.html" %}
+
+关于Bootstrap中的styles和scripts块生命，如果程序需要像已有内容添加新内容
+{{ super() }
+新增内容
+其实就是继承了父类的属性和功能。
 
 
