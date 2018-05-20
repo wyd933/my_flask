@@ -1,0 +1,49 @@
+这段代码主要基于自己对Flask Web开发(狗书)的理解，将代码划分开来学习的
+虚拟环境：
+sudo apt-get install python-virtualenv
+virtualenv venv
+source venv/bin/activate
+
+2018-5-19
+//蓝本
+1、每个界面的业务可以算是一个开端，以蓝本为基础，配合试图函数，可以处理一个单项业务。
+如果有别的业务，再追加一个新业务视图文件夹
+
+补充：蓝本的调用像嵌入式处理的注册
+from . import views  //__init__完成一个蓝本，但是我不做处理，我只执行你要蓝本执行的工作
+@main.route('/', methods = ['GET', 'POST']) //调用蓝本，准备注册自己要完成的功能
+
+2018-5-20
+shell
+2、重新调整了一下结构，配置文件和readme应该是全文件夹的一个总结，所以放根目录了，flask界面程序的整合，
+也放根目录。
+flask.py 加入shell命令行，因为Flask_Script不再维护，所以使用最新的shell工具，该工具直接
+集成在Flask中
+@app.shell_context_processor
+
+使用方法：
+export FLASK_APP=flask.py(自己的应用文件)
+flask shell
+
+/×请求上下文、请求调度、请求钩子、响应，后续增加例子就在后面补充，涉及RESTFUL模型、HTTP协议和上下文文管理×/
+
+引入模板
+3、在做一个项目的时候，如果业务和视图呈现不做区别，或者功能不模块化的话，会提高维护成本。出了问题，
+错综复杂的纠葛，让人抓耳挠腮。flask引入Jinja2模板，将视图处理和业务处理分离
+我在app文件夹下创建了templates，用来处理网页呈现。因为是针对所有网页的，所以放在APP文件夹下
+
+在APP下创建templates文件夹遇到jinja2.exceptions.TemplateNotFound问题
+
+犯了一个超低级错误，居然把python自带的__main__变量加了引号，太低级了，这样在调用蓝本路由的时候，flask就不知道
+在哪里找视图函数了,因为main = Blueprint("main", __name__) 蓝本可以根据第二个参数找到蓝本所在位置
+
+关于HTML：
+HTML是一种文本解释性语言，通过标签的形式，完成网页的呈现。学得快，忘的不比学得慢。
+个人感觉HTML的主要功力在于视觉的设计上，而不是语言本身，后面学到的模板会记录到这里.
+引用于http://www.w3school.com.cn
+Jinja2文档http://jinja.pocoo.org/docs
+
+
+
+
+
