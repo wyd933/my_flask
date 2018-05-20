@@ -92,10 +92,24 @@ moment(current_time).format('LLL')
 moment(current_time).fromNow(refresh=True)
 
 
+WTF表单处理
+6、WTF使用密匙生成加密令牌保护表单
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
+由于引入了配置处理的config.py，所以对于app下初始化的__init__.py也要引入配置内容
+    app.config.from_object(Config)
+    Config.init_app(app)
+引入类方法init_app是为了和别的类处理方式上同步，以便后续添加功能
 
+POST请求方法提交表单更加便利，因为GET请求没有主题可以在URL中显示出来
 
+为了添加表单我做了以下工作
+a）加入表单功能form.py,创建表单类
+b）将表单功能服务于视图
 
+由于刷新页面时，浏览器会重新发送之前发送的最后一个请求，所以最好别让Web程序把POST请求作为浏览器发送的最后
+一个请求。那就引入了重定向响应。但是重定向会丢失上一个请求的数据，所以需要使用sessoin（用户会话，请求上下文中的
+变量）。session是cookie的一部分知识
 
 
 
