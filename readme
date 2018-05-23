@@ -1,4 +1,12 @@
 
+
+补充结构知识：
+1、数据库的设计和使用、
+2、
+3、
+4、
+
+
 学习Flask Web开发 基于Python的Web应用开发实战的总结，以整体理解的方式换了下例子
 的顺序如果需要深入学习请访问其github
 
@@ -28,6 +36,7 @@ CSRF攻击：
 代码中实例化所需组件，最适合在模板中执行
 Bootstrap文档http://getbootstrap.com
 
+SQLAlchemy（http://www.sqlalchemy.org）
 
 
 这段代码主要基于自己对Flask Web开发(狗书)的理解，将代码划分开来学习的
@@ -110,6 +119,102 @@ b）将表单功能服务于视图
 由于刷新页面时，浏览器会重新发送之前发送的最后一个请求，所以最好别让Web程序把POST请求作为浏览器发送的最后
 一个请求。那就引入了重定向响应。但是重定向会丢失上一个请求的数据，所以需要使用sessoin（用户会话，请求上下文中的
 变量）。session是cookie的一部分知识
+
+在模板中使用循环是因为在之前的请求循环中每次调用flash函数时都会生成一个消息，可能多个消息在排队等待显示
+get_flashed_messages()函数获取的消息不会在下次调用时返回
+
+7、数据库
+关系型数据库
+可以读MYSQL必知必会，不过可能永不到低层的东西
+MYSQL是关系型数据库，很多时候需要做联结操作。主键作为唯一的标识，通常一定要不具备特殊的意义。
+通过外键可以将两个表关联起来，当成EXCEL关联数据去理解也可以。
+
+在使用MYSQL的时候要注意不同表之间的联系，在设计的时候避免重复，以此来保证数据的一致性。
+通常检查某项数据可以获取到很多关联信息，但是对于描述一个详细的事物过于抽象
+
+非关系型数据库
+一般用mongdb的比较多，
+在使用mongdb的时候，放宽了一致性的要求，从而获得性能上的优势。而且查询事物内容比较详细
+但是会有很多重复量，因为同一类事物，并没有进行高度的抽象。
+
+Flask使用了 SQLAlchemy ORM来支持关系型数据库引擎，可以支持很多关系型数据库，后续改进的时候会使用MYYSQL数据库
+
+数据库的使用：
+    配置数据库的位置，如果有固定位置可以export DEV_DATABASE_URL
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or
+    'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
+
+    //每次请求结束后自动提交数据库变动
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+
+    初始化app服务的时候加入SQLAlchemy的功能，实例化为db
+
+    定义了两个数据库模型
+    Role
+    可以理解为角色，比如管理员、会员、普通用户
+    User
+    可以理解为身份证、本身不代表身份的象征，指标是一种通用的指带
+
+    模型是数据所有视图所共用的，所以放在APP文件夹下
+
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    User 类的role_id 通过外键和roles表的id建立映射关系
+    users = db.relationship('User', backref='role', lazy='dynamic')
+
+    Role模型使users和USER模型建立关系，访问users即对USER模型整体的访问
+    backref 则通过在USER模型中，创建role变量，使USER模型通过访问role变量，来访问ROLE模型的整体
+    通过下面打印的数据库查询内容，可以确认relationship是根据外键role_id建立起来的整个USER模型的访问
+
+    Role类的users通过反向引用，自行找到满足外键关系的过滤条件,获取外键所在的整个模型，
+    即relationship和外键建立一对多的关系
+    print(User实例.users)
+    SELECT users.id AS users_id, users.username AS users_username, users.role_id AS users_role_id
+    FROM users
+    WHERE :param_1 = users.role_id
+    没有提交到数据库中时，主键和外键均未生效
+
+    在db.session.commit()的时候
+    sqlalchemy.exc.InvalidRequestError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) no such table: roles [SQL: 'INSERT INTO roles (name) VALUES (?)'] [parameters: ('Admin',)]
+    提交失败、建议回滚
+    db.session.rollback()  //能解决很多问题
+
+    提交单个信息收到这个
+    sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: roles [SQL:
+    'INSERT INTO roles (name) VALUES (?)'] [parameters: ('Admin',)]
+
+    主要是因为我之前db.create_all()的时候，文件夹内生成了数据库文件。我尝试把数据库中的表db.drop_all()
+    清除之后观察是否删除数据库的原因，再次调用db.create_all()的时候，没有创建USER和Role列
+
+    一切都提交正确的情况下
+    >>> print(admin_role.id)
+    1
+    >>> print(admin_role.users)
+    SELECT users.id AS users_id, users.username AS users_username, users.role_id AS users_role_id
+    FROM users
+    WHERE ? = users.role_id
+    relationship通过users建立多对以关系，以外键为筛选对象
+
+    >>> print(user_john.role_id)
+    1
+    >>> print(user_susan.role_id)
+    3
+    >>>
+    外键和ID关联
+
+    Role.query.all()
+    query.all查询所有返回值
+
+    增加：
+    add commit
+    删除：
+    delete commit
+    修改：
+    修改 add commit
+
+    主键是由SQLAlchemy来维护的
+
+    用户提交的数据会保存在USER模型中，后期完成注册功能的时候也会用到。
+
 
 
 
