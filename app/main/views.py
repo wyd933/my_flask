@@ -1,9 +1,10 @@
-from flask import render_template, session, redirect, url_for, flash
+from flask import render_template, session, redirect, url_for, flash, current_app
 from . import main
 from datetime import datetime
 from .form import NameForm
 from ..models import User, Role
 from ..import db
+from ..email import send_email
 #注册主界面蓝本的功能
 @main.route('/', methods = ['GET', 'POST'])
 def index():
@@ -52,6 +53,9 @@ def sql_and_form():
             user = User(username=form.user_name.data)
             db.session.add(user)
             session['known']=False
+            if current_app.config['FLASK_ADMIN']:
+                send_email(current_app.config['FLASK_ADMIN'], 'New User',
+                           'mail/new_user', user=user)
         else:
             session['known']=True
         session['user_name'] = form.user_name.data

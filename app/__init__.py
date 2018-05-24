@@ -3,9 +3,11 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
+from flask_mail import Mail
 #flask对象初始化
 bootstrap = Bootstrap()
 moment = Moment()
+mail = Mail()
 db = SQLAlchemy()
 
 def create_app():
@@ -17,7 +19,7 @@ def create_app():
     bootstrap.init_app(app)
     moment.init_app(app)
     db.init_app(app)
-
+    mail.init_app(app)
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     return app

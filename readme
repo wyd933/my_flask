@@ -1,10 +1,11 @@
 
 
 补充结构知识：
-1、数据库的设计和使用、
-2、
-3、
-4、
+1、数据库的设计和使用，怎样关联最合理
+2、email怎么域名发送、不应该使用多线程的
+3、模板
+4、表单
+5、HTML、CSS、JS应该再熟悉一下关于bootstrap的部分
 
 
 学习Flask Web开发 基于Python的Web应用开发实战的总结，以整体理解的方式换了下例子
@@ -213,10 +214,38 @@ Flask使用了 SQLAlchemy ORM来支持关系型数据库引擎，可以支持很
 
     主键是由SQLAlchemy来维护的
 
-    用户提交的数据会保存在USER模型中，后期完成注册功能的时候也会用到。
+    用户提交的数据会保存在USER模型中，后期完成注册功能的时候也会用到。目前没提交
+    数据库掐你代码放在flasky中，开始没想明白，为什么美方如create_app中，后来明白了
+    数据库迁移脚本是用来提供数据库的，也就是在服务器开始之前，要准备好的
 
+    163邮箱的端口含SSL协议和非SSL协议的，TSL协议google邮箱有，另外w3cschool应该也有
+    需要配置用户名、密码、内容前缀、发件人，所用SMTP端口号、支持的SSL或者TSL
 
+    app = current_app._get_current_object()
 
+    Return the current object. This is useful if you want
+    the real object behind the proxy at a time for performance
+    reasons or because you want to pass the object into a different context.
+
+    def _find_app():
+    top = _app_ctx_stack.top
+    if top is None:
+        raise RuntimeError(_app_ctx_err_msg)
+    return top.app
+
+    ...
+
+    current_app = LocalProxy(_find_app)
+
+    LocalProxy 的作用就是可以根据线程/协程返回对应当前协程/线程的对象
+
+    那一切就迎刃而解了。
+    current是一个当前协程或线程对象，它储存了当前线程的数据信息，当执行到非这一线程的时候，该线程压栈、别的线程执行完毕后，
+    该线程在继续执行。另外就是current_app的内存共享？不过python有GIL锁，跑多线程就相当于4核的ARM与单核的ARM，差距很大
+    mail.send()要用到程序上下文
+
+    venv下， pip freeze > requirements.txt自动生成依赖文件
+    pip install -r requirements.txt
 
 
 
