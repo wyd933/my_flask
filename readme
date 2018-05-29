@@ -2,11 +2,12 @@
 
 补充结构知识：
 1、数据库的设计和使用，怎样关联最合理
-2、email怎么域名发送、不应该使用多线程的
+2、email怎么跨域名发送、不应该使用多线程的
 3、模板
 4、表单
-5、HTML、CSS、JS应该再熟悉一下关于bootstrap的部分
-
+5、单元测试
+6、HTML、CSS、JS应该再熟悉一下关于bootstrap的部分
+7、Werkzeug
 
 学习Flask Web开发 基于Python的Web应用开发实战的总结，以整体理解的方式换了下例子
 的顺序如果需要深入学习请访问其github
@@ -247,10 +248,46 @@ Flask使用了 SQLAlchemy ORM来支持关系型数据库引擎，可以支持很
     venv下， pip freeze > requirements.txt自动生成依赖文件
     pip install -r requirements.txt
 
+后面实现博客
 
+主界面先保留之前写的代码，不做和用户验证关联，主要是main模块实现主界面模板
 
+下面开始做用户认证的功能
+按照模块划分，创建auth的视图处理的文件夹，需要加入新的蓝本
+和开始一样，先增加用户验证蓝本
 
+html直接借用的书上的login.html，不过html中包含
 
+wtf.quick_form(form)
+url_for('auth.password_reset_request')
+url_for('auth.register')
+
+先把403的html倒过来，后来发现一个bug
+<!--{% block title %}Flasky - Login{% endblock %}-->
+就算注释掉block title，还是会报jinja2.exceptions.TemplateAssertionError: block 'title' defined twice
+必须删除掉原来的login.html的代码
+cut到一个位置，后续再用
+
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
+url_prefix='/auth‘是个好参数
+
+认证蓝本做好以后，该把用户的User抽象类用WTFForm表现出来
+创建form.py
+除了User有两条没记得，那就是一般登录要有记住登录和提交
+
+放开form
+
+在写@login_manager.user_loader的时候有疑惑
+你需要提供一个 user_loader 回调。这个回调用于从会话中存储的用户 ID 重新加载用户对象。
+它应该接受一个用户的 unicode ID，并返回相应的用户对象。
+大概是Session里保留的user_id在起作用
+
+https://segmentfault.com/q/1010000010253582
+ahusky的回答
+可以看到，我们手动调用是将user的属性写入session，并绑定到当前的请求上下文。
+由于HTTP是无状态连接，每次发起新请求时flask 会创建一个请求上下文，在分发路
+由时flask-login根据cookie判断用户并绑定到当前的请求上下文，由于这种绑定关
+系的存在，那么每次新的请求发生时都需要获取user 看一下最后绑定的代码：
 
 
 
