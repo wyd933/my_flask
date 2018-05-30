@@ -291,13 +291,128 @@ ahusky的回答
 
 
 
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/wyd/my_flask/app/auth/views.py", line 9, in login
+    if form.validate_on_submit():
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_wtf/form.py", line 101, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/form.py", line 310, in validate
+    return super(Form, self).validate(extra)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/form.py", line 152, in validate
+    if not field.validate(self, extra):
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/fields/core.py", line 204, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/fields/core.py", line 224, in _run_validation_chain
+    validator(form, self)
+TypeError: __init__() takes from 1 to 2 positional arguments but 3 were given
+127.0.0.1 - - [30/May/2018 01:30:45] "POST /auth/login HTTP/1.1" 500 -
+^C(venv) root@wyd-virtual-machine:/home/wyd/my_flask# flask run
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+127.0.0.1 - - [30/May/2018 01:31:06] "GET /auth/login HTTP/1.1" 200 -
+[2018-05-30 01:31:09,777] ERROR in app: Exception on /auth/login [POST]
+Traceback (most recent call last):
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/wyd/my_flask/app/auth/views.py", line 9, in login
+    if form.validate_on_submit():
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_wtf/form.py", line 101, in validate_on_submit
+    return self.is_submitted() and self.validate()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/form.py", line 310, in validate
+    return super(Form, self).validate(extra)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/form.py", line 152, in validate
+    if not field.validate(self, extra):
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/fields/core.py", line 204, in validate
+    stop_validation = self._run_validation_chain(form, chain)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/wtforms/fields/core.py", line 224, in _run_validation_chain
+    validator(form, self)
+TypeError: __init__() takes from 1 to 2 positional arguments but 3 were given
+
+form的验证函数有写错会出现该trace，忘记写括号了
 
 
 
+cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError)
+no such table: users [SQL: 'SELECT users.id AS users_id,
+users.username AS users_username, users.role_id AS users_role_id,
+users.email AS users_email, users.password_hash AS users_password_hash
+\nFROM users \nWHERE users.email = ?\n LIMIT ? OFFSET ?']
+[parameters: ('wuzhidexiaoxiaoxia@163.com', 1, 0)]
+(Background on this error at: http://sqlalche.me/e/e3q8)
 
+显然数据库诶有users,因为在练习数据库迁移的时候把数据库删了
 
+调用API，以及不关联其他知识的东西，就不要遇到个函数，没有具体说明就查源码了，
+先熟练以后再看吧，非通用内容和源码，开始阶段不应该投入太多，API工程师，，，，
 
+raceback (most recent call last):
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/wyd/my_flask/app/auth/views.py", line 13, in login
+    login_user(user, form.remember_me.data)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_login/utils.py", line 158, in login_user
+    if not force and not user.is_active:
+AttributeError: 'User' object has no attribute 'is_active'
+https://stackoverflow.com/questions/27603212/python-
+flask-user-object-has-no-attribute-is-active
+mhawke的回答
 
+Your User class does not define any method is_active(). Your user class needs to implement these documented methods.
+
+Judging by your imports it looks like you had already intended to do it,
+but you can use the UserMixin class to provide default implementations
+for the required User methods. You should just be able to
+add UserMixin as a base class for your User class:
+
+UserMixin后面有讲解，
+原来是为了login_user()做的默认配置类，用来处理一些
+有关if not force and not user.is_active的配置
+把它加入到User。
+不太喜欢这种方式，这是不是意味着别的功能调用User类，也要加入UserMixin方法的配置？
+
+Regexp()
+正则表达式、和HTML一样，是容易遗忘、python核心编程第三版第一章
+
+def validate_user_name(self, field):
+validate是测试头，后面是User的字段
+field应用挺广泛的，爬虫也用了Field类，就是不知道是啥，只拿它当容器使用
+
+pycharm 中， 继承bootstrap的模板用ctrl / 注释不起作用，还要删除
 
 
 关于HTML：
