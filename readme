@@ -399,20 +399,49 @@ but you can use the UserMixin class to provide default implementations
 for the required User methods. You should just be able to
 add UserMixin as a base class for your User class:
 
-UserMixin后面有讲解，
+UserMixin，
 原来是为了login_user()做的默认配置类，用来处理一些
 有关if not force and not user.is_active的配置
 把它加入到User。
-不太喜欢这种方式，这是不是意味着别的功能调用User类，也要加入UserMixin方法的配置？
+不太喜欢多根继承，但是可以接受
+
+为了用flask-login扩展， User模型必须实现4种方法
+即：
+1、用户是否登录
+2、用户是否允许登录
+3、用户是否匿名登录
+4、获取用户唯一ID
 
 Regexp()
 正则表达式、和HTML一样，是容易遗忘、python核心编程第三版第一章
 
 def validate_user_name(self, field):
 validate是测试头，后面是User的字段
+current_user.confired等也是使用的models字段，为啥
+仿佛所有的东西都是围绕数据库做的
+
+
 field应用挺广泛的，爬虫也用了Field类，就是不知道是啥，只拿它当容器使用
 
 pycharm 中， 继承bootstrap的模板用ctrl / 注释不起作用，还要删除
+
+邮件跨网站发送, 加入SSL协议就可以了
+邮件避免垃圾箱
+
+confirm 加入了，但是管理没有加入
+用网易邮箱发出去的邮件居然有一个小时时差，时间倒流一小时
+
+before_app_request未生效
+confirm路由何时会调用
+
+@auth.before_app_first_request
+直接补全导致的请求保护失效，因为已经不是第一次请求了
+
+论坛角色管理：
+位图权限码，附带注册默认值（比较好）
+
+为啥总感觉flask一直在用老式的类定义方式
+
 
 
 关于HTML：
