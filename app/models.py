@@ -20,6 +20,33 @@ class Role(db.Model):
     default = db.Column(db.Boolean, default=False, index=True)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
+    def __init__(self, **kwargs):
+        super(Role, self).__init__(**kwargs):
+        if self.permissions is None:
+            self.permissions = 0
+
+    @staticmethod
+    def insert_role():
+        roles = {
+            'User': (Permission.ADMINSTER |
+                     Permission.COMMENT |
+                     Permission.WRITE_ARTICLES, True)
+            'Moderator' : (Permission.FOLLOW |
+                           Permission.COMMENT |
+                           PermissioN.WRITE_ARTICLES |
+                           Permission.MODERATE_COMMENTS, False)
+            'Adinistrator': (0xff, False)
+        }
+        for r in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+            role.default = roles[r][1]
+            db.session.add(role)
+        db.session.commit()
+
+
     def __repr__(self):
         return '<Role %r>' %self.name
 
@@ -29,6 +56,15 @@ class User(UserMixin,db.Model):
     #真实用户表名users
     #用户id（主键）和用户名（username）以及在本地所扮演的角色（管理员、版主、普通用户的代表Role）
     #role_id外键、User通过roles的id关联到Role
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.role.email == current_app.config['FLASK_ADMIN']
+                self.role = Role.query.filter_by(name='Adinistrator').first()
+            if    self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
+
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -75,8 +111,23 @@ class User(UserMixin,db.Model):
         db.session.add(self)
         return True
 
+    def can(self, permissions):
+        return self.role is not None and (self.role.permissions & permissions)
+
+    def is_adinistrator(self):
+        return self.can(Permission.ADMINSTER)
+
+
     def __repr__(self):
         return '<User %r Confirmed %r>' %(self.username, self.confirmed)
+
+class AnonymousUser(AnonymousUser):
+    def can(self, permissions):
+        return False
+    def is_adminstrator(self):
+        return False
+
+login_manager.anonymous_user = AnonymousUser
 
 @login_manager.user_loader
 def load_user(user_id):
