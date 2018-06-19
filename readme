@@ -442,6 +442,124 @@ confirm路由何时会调用
 
 为啥总感觉flask一直在用老式的类定义方式
 
+functools.wraps
+维护装饰器装饰的函数，使装饰器装饰过的函数保留类似__name__等属性。
+
+def permission_required(permission):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, *kwargs):
+            if not current_user.can(permission):
+                abort(403)
+            return f(*args, *kwargs)
+        return decorated_function
+    return decorator
+
+decorator 是一个装饰器函数
+而permission_required是一个返回装饰器函数的函数，它的参数将作用于装饰器，
+这应该会对闭包造成影响
+
+很容易犯一个错误：
+迭代开发过程中，数据库增加新的内容，但是们没有创建该字段，总是会报错的
+
+还有一个bug就是当前登录用户无法退出总是到认证界面,需要该bootstrap
+
+放弃html，导致好多因为功能添加，和后端不对应的问题，所以直接复制html文件来使用，以达到快速的目的
+
+admin验证有问题，估计是没有嵌入权限数据。但是有个404不知道为什么
+
+数据库迁移和更新绝对是大事
+
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "/home/wyd/my_flask/app/models.py", line 135, in gravatar
+    if request.is_secure:
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/werkzeug/local.py", line 347, in __getattr__
+    return getattr(self._get_current_object(), name)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/werkzeug/local.py", line 306, in _get_current_object
+    return self.__local()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/globals.py", line 37, in _lookup_req_object
+    raise RuntimeError(_request_ctx_err_msg)
+RuntimeError: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request.  Consult the documentation on testing for
+information about how to avoid this problem.
+>>> u.gravatar()
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+  File "/home/wyd/my_flask/app/models.py", line 135, in gravatar
+    if request.is_secure:
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/werkzeug/local.py", line 347, in __getattr__
+    return getattr(self._get_current_object(), name)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/werkzeug/local.py", line 306, in _get_current_object
+    return self.__local()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/globals.py", line 37, in _lookup_req_object
+    raise RuntimeError(_request_ctx_err_msg)
+RuntimeError: Working outside of request context.
+
+This typically means that you attempted to use functionality that needed
+an active HTTP request.  Consult the documentation on testing for
+information about how to avoid this problem.
+运行request需要在请求上下文？
+
+(venv) root@wyd-virtual-machine:/home/wyd/my_flask# flask run
+ * Serving Flask app "flasky.py"
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+[2018-06-19 22:58:10,568] ERROR in app: Exception on / [GET]
+Traceback (most recent call last):
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/wyd/my_flask/app/main/views.py", line 126, in index
+    return render_template('index.html', form=form, posts=posts)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/wyd/my_flask/app/templates/index.html", line 2, in top-level template code
+    {% import "bootstrap/wtf.html" as wtf %}
+  File "/home/wyd/my_flask/app/templates/base.html", line 1, in top-level template code
+    {% extends "bootstrap/base.html" %}
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
+    {%- block html %}
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 20, in block "html"
+    {% block body -%}
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 23, in block "body"
+    {% block content -%}
+  File "/home/wyd/my_flask/app/templates/base.html", line 62, in block "content"
+    {% block page_content %}{% endblock %}
+  File "/home/wyd/my_flask/app/templates/index.html", line 11, in block "page_content"
+    {% if current_user.can(Permission.WRITE_ARTICLES) %}
+  File "/home/wyd/my_flask/venv/lib/python3.5/site-packages/jinja2/environment.py", line 430, in getattr
+    return getattr(obj, attribute)
+jinja2.exceptions.UndefinedError: 'Permission' is undefined
+少在main.init里面添加功能，所以Permission没有定义
+书中是这样说的：
+在模板中可能也需要检查权限，所以Permission类为所有位定义了常量以便于获取。
+为了避免每次调用render_template()时都多添加一个模板参数，可以使用上下文处理器
+赏析文处理器能让变量在所有模板中全局可访问。
 
 
 关于HTML：
